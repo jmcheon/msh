@@ -33,7 +33,7 @@ static int	parse_each_heredoc(t_minishell *msh, char ***pipe_args, int i)
 				//((*pipe_args) + j + 1);
 			if (execute_heredoc(msh, *pipe_args + j) == 1)
 				return (1);
-			*pipe_args = ft_strtrim_2dim_by_index(pipe_args, j, 2);
+			*pipe_args = ft_substr_2dim(pipe_args, j, 2);
 			//printf("is_command, redir_input = (%zu, %d)\n", check_command(pipe_args), msh->cmd.flags.redirection_input);
 		fprintf(stderr, "is_command, redir_input = (%zu, %zu)\n",check_command(pipe_args),check_redirection_input((*pipe_args) + j));
 		//printf("*(*pipe_args) + j=%s\n", *((*pipe_args) + j + 1));
@@ -93,7 +93,7 @@ static char	**parse_heredocs(t_minishell *msh, char **args)
 					msh->cmd.flags.redirection_input = 0;
 				if (get_next_heredoc_command(msh, pipe_args + j, i) == 1)
 					return ((char **) NULL);
-				pipe_args = ft_strtrim_2dim_by_index(&pipe_args, j, 2);
+				pipe_args = ft_substr_2dim(&pipe_args, j, 2);
 				//printf("is_command, redir_input = (%zu, %d)\n", is_command, msh->flags.redirection_input);
 				if (is_command == 1 && msh->cmd.flags.redirection_input == 0)
 				{

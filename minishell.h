@@ -17,70 +17,72 @@
 # define Q_SINGLE '\''
 # define Q_DOUBLE '\"'
 
+
 typedef struct s_flags
 {
-	//int	valid_fd;
-	//int	redirection_input;
 	int	q_single;
 	int	q_double;
 }	t_flags;
-
-typedef struct s_args
-{
-	char	**args;
-	char	*token;
-}	t_args;
 
 typedef struct	s_cmd
 {
 	char	*line;
 	char	**args;
-	char	*token;
 	char	*temp_path;
 	char	**heredoc_paths;
 	int	pipe_count;
 	int	valid_fd;
-	//t_flags	flags;
 }	t_cmd;
 
 typedef struct	s_minishell
 {
+	char	*line;
 	char	*ret;
 	char	**envp;
+	int	exit_status;
 	int	stdfd[2];
 	int	cmd_count;
+	int	g_pid;
+	int	sigint;
+	int	running_heredoc;
+	char	*heredoc_limiter;
 	t_cmd	*cmd;
 }	t_minishell;
+
+t_minishell	msh;
 
 /* init & free */
 void	init_flags(t_flags *flags);
 void	init_cmd(t_cmd *cmd);
 void	init_msh(t_minishell *msh, char **envp);
-void	free_cmd(t_cmd *cmd);
-void	free_msh(t_minishell *msh);
-
-/* check readline */
+void	free_cmd(t_cmd *cmd, int mode);
+void	free_msh(t_minishell *msh, int mode);
 
 /* check validation */
 int	check_readline(t_minishell *msh, char **line);
 int	check_quotes(t_minishell *msh, char **line);
 int	check_pipeline(t_minishell *msh, char **line);
-
 size_t	check_readline_argc(char *line);
 char	**check_valid_readline(t_minishell *msh, char *line);
 char	**check_valid_redirection(t_minishell *msh, t_cmd *cmd, char **args);
 size_t	check_pipe_count(char **args, size_t size);
 
+/* parse variables */
+void	check_variables(t_minishell *msh, char ***args);
+char	*replace_variables_one_line(t_minishell *msh, char *line);
+char	*search_one_variable(t_minishell *msh, char *variable);
+
 /* quotes parsing */
-size_t	check_single_quote(char *line, size_t *argc);
-size_t	check_double_quote(char *line, size_t *argc);
-void	check_quote_characters(t_flags *flags, char *line);
-char	*omit_character(char *str, int c);
+size_t	check_single_quote(char *line, size_t i);
+size_t	check_double_quote(char *line, size_t i);
+void	check_quote_characters(t_flags *flags, char *line, size_t i);
 char	*omit_quotes(char *str);
 
 /* to parse strings */
 int	ft_readline(t_minishell *msh);
-char	**split_readline_by_argc(t_minishell *msh, char *line);
+char	**split_readline_by_argc(t_minishell *msh, char **args, char *line);
+char	*rmalloc_line(char *line, size_t size);
+size_t	get_new_line_size(char *line);
 char	**split_character(char **args, int c);
 char	**split_string(char **args, char *s);
 
@@ -96,13 +98,13 @@ int	run_pipe_commands(t_minishell *msh, t_cmd *cmd, int pipe_count);
 
 /* to run each process */
 int	run_one_process(t_minishell *msh, t_cmd *cmd);
-int	run_pipein_process(t_minishell *msh, t_cmd *cmd, char ***pipe_args);
+int	run_pipein_process(t_minishell *msh, t_cmd *cmd, char ***pipe_args, int pipefd[2]);
 int	run_pipe_process(t_minishell *msh, t_cmd *cmd, char ***pipe_args);
 int	run_pipeout_process(t_minishell *msh, t_cmd *cmd, char ***pipe_args);
 
 /* to execute one command */
 int	execute_one_command(t_minishell *msh, t_cmd *cmd, char **args);
-void	ft_execve(t_minishell *msh, char **args);
+int	ft_execve(t_minishell *msh, char **args);
 
 /* syntax error handling */
 int	check_syntax_error(t_minishell *msh, char **args, size_t size);
@@ -119,17 +121,40 @@ void	redirect_pipe(int prevfd[2], int pipefd[2]);
 void	redirect_pipeout(int pipefd[2]);
 
 /* to parse redirection part */
-char	**ft_strtrim_2dim_by_index(char ***args, int start, int num);
+char	**ft_substr_2dim(char ***args, size_t start, size_t len);
 
 /* funtions */
 void	print_2dim_string(char **s, size_t size);
+void	print_err_msg(char *msg, char *str, char *msg2);
 char	*ft_itos(int c);
 int	ft_issymbol(char **s);
 int	ft_iscommand(char **s);
 size_t	check_command(char ***args);
 size_t	check_redirection_input(char **args);
+char	*ft_strdup_by_index(char *line, size_t start, size_t end);
+char	**malloc_args(char *str);
+char	**malloc_args_memdel(char *str);
+char	*malloc_by_size(size_t size);
+char	**ft_strtrim_2dim(const char **args, const char *set);
+char	**ft_strtrim_2dim_by_index(const char **args, size_t start, size_t end);
 
+/* builtin */
+int	search_one_variable_path(t_minishell *msh, char *variable);
+char	*get_one_variable_path(t_minishell *msh, char *variable);
+void	ft_unset(t_minishell *msh, char **args);
+//void	ft_env(t_minishell *msh);
+//void	ft_env(char **envp);
+int	ft_env(t_minishell *msh);
+int	ft_pwd(t_minishell *msh);
+void	ft_cd(t_minishell *msh, char **args, int err);
+int	ft_echo(t_minishell *msh, char **cmd);
+void	ft_export(t_minishell *msh, char **cmd);
+void	ft_export3(char **cmd, char **envp);
+int	ft_exit(t_minishell *msh, char **args);
+int	ft_exit_pipe(t_minishell *msh, char **args);
+void	ft_unset(t_minishell *msh, char **args);
 
-
+void	listen_signals_heredoc(void);
+void	listen_signals(void);
 
 #endif

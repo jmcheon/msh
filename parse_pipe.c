@@ -9,7 +9,6 @@ return value		: parsed 2 dimensional string
 
 char	**parse_pipe_part(char **args, int process_num)
 {
-	//char	*temp;
 	char	**new_args;
 	size_t	i;
 	size_t	command_length;

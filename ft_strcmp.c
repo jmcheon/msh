@@ -20,10 +20,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 
 	i = 0;
 	if (s1 == NULL)
-	{
-		//printf("s1 is null, s2=%s, %d\n", s2, *s2);
 		return (*s2);
-	}
 	if (s2 == NULL)
 		return (*s1);
 	str1 = (unsigned char *)s1;
@@ -34,6 +31,5 @@ int	ft_strcmp(const char *s1, const char *s2)
 			break ;
 		i++;
 	}
-	//printf("\ts1 - s2=%d\n", str1[i]-str2[i]);
 	return (str1[i] - str2[i]);
 }

@@ -1,22 +1,10 @@
 #include "minishell.h"
 
-static char	**malloc_temp_path(t_cmd *cmd)
-{
-	char	**temp_args;
-
-	temp_args = (char **)malloc(sizeof(char *) * 2);
-	if (!temp_args)
-		return ((char **) NULL);
-	temp_args[0] = ft_strdup(cmd->temp_path);
-	temp_args[1] = NULL;
-	return (temp_args);
-}
-
 static void	realloc_pipe_args_heredoc_paths(t_cmd *cmd, char ***pipe_args)
 {
-	*pipe_args = ft_strjoin_2dim_memdel(*pipe_args, malloc_temp_path(cmd));
+	*pipe_args = ft_strjoin_2dim_memdel(*pipe_args, malloc_args(cmd->temp_path));
 	cmd->heredoc_paths = ft_strjoin_2dim_memdel(cmd->heredoc_paths,
-			malloc_temp_path(cmd));
+			malloc_args(cmd->temp_path));
 }
 
 static int	parse_each_heredoc(t_minishell *msh, t_cmd *cmd, char ***pipe_args)
@@ -33,7 +21,7 @@ static int	parse_each_heredoc(t_minishell *msh, t_cmd *cmd, char ***pipe_args)
 		{
 			if (execute_heredoc(msh, cmd, *pipe_args + j) == 1)
 				return (1);
-			*pipe_args = ft_strtrim_2dim_by_index(pipe_args, j, 2);
+			*pipe_args = ft_substr_2dim(pipe_args, j, 2);
 			if (check_command(pipe_args)
 				&& !check_redirection_input((*pipe_args) + j))
 				realloc_pipe_args_heredoc_paths(cmd, pipe_args);
@@ -59,7 +47,11 @@ static char	**parse_heredocs(t_minishell *msh, t_cmd *cmd, char **args)
 	{
 		pipe_args = parse_pipe_part(args, i);
 		if (parse_each_heredoc(msh, cmd, &pipe_args) == 1)
+		{
+			ft_memdel_2dim(&args);
+			ft_memdel_2dim(&pipe_args);
 			return ((char **) NULL);
+		}
 		if (i != cmd->pipe_count)
 		{
 			temp_args = (char **)malloc(sizeof(char *) * 2);
@@ -85,7 +77,10 @@ char	**check_valid_redirection(t_minishell *msh, t_cmd *cmd, char **args)
 	i = 0;
 	size = ft_strlen_2dim((const char **)args);
 	if (check_syntax_error(msh, args, size) == 1)
+	{
+		ft_memdel_2dim(&args);
 		return ((char **) NULL);
+	}
 	args = parse_heredocs(msh, cmd, args);
 	return (args);
 }

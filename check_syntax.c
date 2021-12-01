@@ -33,6 +33,10 @@ size_t	check_command(char ***args)
 			|| !ft_strcmp((*args)[i], "<<") || !ft_strcmp((*args)[i], ">>"))
 			i += 2;
 	//	printf("check command *args + i=%s\n", *(*args + i));
+		if (!ft_strcmp((*args)[i], "echo"))
+			return (0);
+		if (!ft_strcmp((*args)[i], "ls"))
+			return (0);
 		if (ft_iscommand(&(*args)[i]) == 1)
 		//if (ft_isalnum((*args)[i]) == 0 && (*args)[i] != '_' && (*args)[i] != '/')
 			return (1);
@@ -99,7 +103,7 @@ int	execute_syntax_error(t_minishell *msh, char *s, int i)
 	int	wstatus;
 
 	wstatus = 0;
-	printf("i=%d\n", i);
+	//printf("i=%d\n", i);
 	//printf("check syntax error\n");
 	pid = fork();
 	if (pid == -1)
@@ -117,12 +121,14 @@ int	execute_syntax_error(t_minishell *msh, char *s, int i)
 			msh->ret = ft_strjoin("msh: ", "syntax error: unexpected token 'new line'");
 		else if (i == -4)
 		{
-			temp = ft_strjoin(s, ")");
-			msh->ret = ft_strjoin("msh: syntax error: unexpected end of file (wanted ", temp);
-			ft_memdel(&temp);
+			//temp = ft_strjoin(s, ")");
+			//msh->ret = ft_strjoin("msh: syntax error: unexpected end of file (wanted ", temp);
+			printf("msh: syntax error: unexpected end of file (wanted %s)\n", s);
+			//ft_memdel(&temp);
 		}
 		else if (i == -5)
-			msh->ret = ft_strjoin("msh: unexpected EOF while looking for matching ", s);
+			printf("msh: unexpected EOF while looking for matching '%s'\n", s);
+			//msh->ret = ft_strjoin("msh: unexpected EOF while looking for matching ", s);
 		else
 			msh->ret = ft_strjoin("msh: syntax error near unexpected token ", s);
 		return (1);
@@ -175,7 +181,7 @@ int	ft_issymbol(char **s)
 	i = 0;
 	if (*s == NULL)
 		return (-1);
-	if (!ft_strcmp(*s, "<") || !ft_strcmp(*s, ">") || !ft_strcmp(*s, "<<") || !ft_strcmp(*s, ">>") || !ft_strcmp(*s, "|"))
+	if (!ft_strcmp(*s, "<") || !ft_strcmp(*s, ">") || !ft_strcmp(*s, "<<") || !ft_strcmp(*s, ">>") || !ft_strcmp(*s, "|") || !ft_strcmp(*s, ";"))
 		return (1);
 	return (0);
 }
@@ -299,21 +305,29 @@ int	check_readline_syntax_error(t_minishell *msh, char *line)
 
 	i = 0;
 	err = 0;
+	args = NULL;
 	init_flags(&flags);
-	check_quote_characters(&flags, line);
+	fprintf(stderr, "check readline syntax error\n");
+	check_quote_characters(&flags, line, 0);
 	if (flags.q_single == 1)
 		temp = ft_strjoin(line, "\'");
 	else if (flags.q_double == 1)
 		temp = ft_strjoin(line, "\"");
 	else
 		temp = ft_strdup(line);
+	if (check_readline_argc(temp) <= 0)
+	{
+		ft_memdel(&temp);
+		return (1);
+	}
 	fprintf(stderr, "check syntax readline new line=%s\n", temp);
-	args = split_readline_by_argc(msh, temp);
+	args = split_readline_by_argc(msh, args, temp);
 	ft_memdel(&temp);
 	if (check_syntax_error(msh, args, ft_strlen_2dim((const char **)args)) == 1)
 	{
 	//	ft_memdel_2dim(&args);
-		return (1);
+		fprintf(stderr, "syntax error\n");
+		return (2);
 	}
 
 /*

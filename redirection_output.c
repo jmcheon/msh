@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_output.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/01 13:45:49 by cjung-mo          #+#    #+#             */
+/*   Updated: 2021/12/01 13:45:51 by cjung-mo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	open_outfile(char *token, char *outfile_path, int *outfile)
@@ -17,6 +29,11 @@ int	redirect_output(t_minishell *msh, char *token, char *outfile_path)
 	int		outfile;
 
 	temp = NULL;
+	if (msh->cmd[0].valid_fd == -1)
+	{
+		msh->cmd[0].valid_fd = 0;
+		return (1);
+	}
 	if (open_outfile(token, outfile_path, &outfile) == 1)
 	{
 		if (msh->ret == NULL)

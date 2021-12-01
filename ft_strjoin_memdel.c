@@ -20,8 +20,6 @@ char	*ft_strjoin_memdel(char *s1, char *s2)
 
 	i = -1;
 	len = 0;
-	//if (!s1 || !s2)
-	//	return (NULL);
 	dst = (char *)malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
 	if (!dst)
 		return (NULL);

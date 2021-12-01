@@ -88,7 +88,7 @@ char	**split_character(char **args, int c)
 
 	i = 0;
 	size = ft_strlen_2dim((const char **)args);
-	printf("split pipe character original str, size=%zu, c=%c\n", size, c);
+	//printf("split pipe character original str, size=%zu, c=%c\n", size, c);
 	//print_2dim_string(args, ft_strlen_2dim((const char **)args));
 	//printf("size=%zu\n", size);
 	new_args = NULL;
@@ -99,7 +99,7 @@ char	**split_character(char **args, int c)
 		if ((ft_strchr(args[i], c) && ft_strcmp(args[i], "<<") == 0)
 			|| (ft_strchr(args[i], c) && ft_strcmp(args[i], ">>") == 0))
 		{
-			printf("fr\n");
+			//printf("fr\n");
 			//temp_args = ft_split_pipe(args[i]);
 			//new_args = ft_strjoin_2dim_memdel((const char **)new_args, (const char **)temp_args);
 			temp_args = (char **)malloc(sizeof(char *) * 2);
@@ -123,7 +123,7 @@ char	**split_character(char **args, int c)
 		}
 		else
 		{
-			printf("lat\n");
+			//printf("lat\n");
 			temp_args = (char **)malloc(sizeof(char *) * 2);
 			if (!temp_args)
 				return ((char **)NULL);

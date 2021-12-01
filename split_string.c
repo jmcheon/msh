@@ -90,7 +90,10 @@ char	**split_string(char **args, char *s)
 	{
 		//if (ft_strchr(args[i], c) && ft_strcmp(args[i], temp))
 		//if (ft_strstr(args[i], s) && ft_strcmp(args[i], s))
-		if (ft_strstr(args[i], s) && args[i][ft_strstr(args[i], s) - args[i] - 1] != '\\' && ft_strcmp(args[i], s))
+		if (ft_strstr(args[i], s)
+			&& (ft_strstr(args[i], s) - args[i] > 0 && (args[i][ft_strstr(args[i], s) - args[i] - 1] != '\\'))
+			&& ft_strcmp(args[i], s))
+		//if (ft_strstr(args[i], s) && args[i][ft_strstr(args[i], s) - args[i] - 1] != '\\' && ft_strcmp(args[i], s))
 		{
 		//	printf("args[i]=%s\n", args[i]);
 			temp_args = ft_split_string(args[i], s);

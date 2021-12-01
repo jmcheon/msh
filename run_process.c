@@ -7,8 +7,11 @@ void	redirect_pipein(int pipefd[2])
 	close(pipefd[1]);
 }
 
-int	run_pipein_process(t_minishell *msh, t_cmd *cmd, char ***pipe_args)
+int	run_pipein_process(t_minishell *msh, t_cmd *cmd, char ***pipe_args, int pipefd[2])
 {
+	close(pipefd[0]);
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[1]);
 	fprintf(stderr, "first process, pipe args size=%zu\n", ft_strlen_2dim((const char **)*pipe_args));
 	parse_redirection_part(msh, cmd, pipe_args);
 	if (ft_issymbol(&(*pipe_args)[0]) != 0)

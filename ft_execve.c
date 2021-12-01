@@ -10,38 +10,60 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "minishell.h"
 
-static void	i_ft_execve(char *cmd, char **args, unsigned int i)
+static int	i_ft_execve(t_minishell *msh, char **args, size_t *i)
 {
-	char	**paths;
-	char	*current_path;
-	char	*new_path;
-
-	paths = ft_split(environ[i] + 5, ':');
-	i = 0;
-	while (i < ft_strlen_2dim((const char **)paths))
+	*i = 0;
+	while (msh->envp[*i] != NULL
+		&& ft_strncmp(msh->envp[*i], "PATH", 4) != 0)
+		(*i)++;
+	if (ft_strcmp(args[0], "unset") == 0)
+		return (1);
+	if (ft_strcmp(args[0], "export") == 0)
+		return (1);
+	if (ft_strcmp(args[0], "cd") == 0)
+		return (1);
+	if (ft_strcmp(args[0], "exit") == 0)
 	{
-		current_path = ft_strjoin(paths[i], "/");
-		new_path = ft_strjoin(current_path, cmd);
-		execve(new_path, args, environ);
-		free(current_path);
-		free(new_path);
-		i++;
+		msh->exit_status = ft_exit_pipe(msh, args);
+		return (1);
 	}
-	ft_memdel_2dim(paths);
+	else if (ft_strcmp(args[0], "env") == 0)
+		return (ft_env(msh));
+	else if (ft_strcmp(args[0], "echo") == 0)
+		return (ft_echo(msh, args));
+	else if (ft_strcmp(args[0], "pwd") == 0)
+		return (ft_pwd(msh));
+	return (0);
 }
 
-void	ft_execve(char *cmd, char **args, char **ret)
+int	ft_execve(t_minishell *msh, char **args)
 {
-	int		i;
+	char	**paths;
+	char	*new_path;
+	char	*current_path;
+	size_t	i;
+	size_t	size;
 
-	i = 0;
-	while (environ[i])
+	if (i_ft_execve(msh, args, &i) == 1)
+		return (1);
+	if (msh->envp[i] != NULL)
 	{
-		if (ft_strncmp(environ[i], "PATH", 4) == 0)
-			i_ft_execve(cmd, args, i);
-		i++;
+		paths = ft_split(msh->envp[i] + 5, ':');
+		size = ft_strlen_2dim((const char **)paths);
+		i = -1;
+		while (++i < size)
+		{
+			current_path = ft_strjoin(paths[i], "/");
+			new_path = ft_strjoin(current_path, args[0]);
+			execve(new_path, args, msh->envp);
+			free(current_path);
+			free(new_path);
+		}
+		ft_memdel_2dim(&paths);
 	}
-	*ret = ft_strjoin(cmd, ": command not found\n");
+	msh->ret = ft_strjoin(args[0], ": command not found");
+	msh->exit_status = 127;
+	return (0);
 }
