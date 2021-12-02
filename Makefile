@@ -24,25 +24,26 @@ SRCS = main.c \
 	./ft_strcmp.c \
 	./ft_strncmp.c \
 	./ft_isalnum.c \
+	./ft_isalpha.c \
 	./ft_itoa.c \
 	./ft_itos.c \
 	./ft_putendl_fd.c \
 	./ft_putstr_fd.c \
-	./malloc_args.c \
-	./malloc_by_size.c \
+	./malloc_funcs.c \
 	./check_syntax_n.c \
 	./check_quotes_n.c \
 	./check_pipeline_n.c \
 	./check_valid_redirection_n.c \
+	./check_redirection_variable.c \
 	./check_token.c \
 	./get_next_line.c \
 	./init.c \
 	./omit_quotes_n.c \
 	./execute.c \
 	./parse_pipe_n.c \
-	./parse_redirection_part.c \
+	./parse_redirection_part_n.c \
 	./run_process_n.c \
-	./run_command.c \
+	./run_command_n.c \
 	./run_one_command_n.c \
 	./redirection_input.c \
 	./redirection_output.c \
@@ -56,6 +57,7 @@ SRCS = main.c \
 	./replace_variables_one_line.c \
 	./search_one_variable.c \
 	./ft_execve.c \
+	./ft_setenv.c \
 	./ft_cd.c \
 	./ft_unset.c \
 	./ft_exit.c \

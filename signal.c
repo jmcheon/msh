@@ -1,28 +1,30 @@
 #include "minishell.h"
 
-//extern int	g_pid;
-void	handle_heredoc(int signum)
+void	handle_child_signal(int signum)
 {
-	printf("heredoc handle\n");
 	if (signum == SIGINT)
 	{
-		if (msh.running_heredoc == 1)
+		ft_putstr_fd("\n", STDERR_FILENO);
+		msh.exit_status = 130;
+	}
+	if (signum == SIGQUIT)
+	{
+		ft_putstr_fd("Quit (core dumped)\n", STDERR_FILENO);
+		msh.exit_status = 131;
+	}
+}
+
+void	handle_heredoc(int signum)
+{
+	//printf("heredoc handle\n");
+	if (signum == SIGINT)
+	{
 		{
-			printf("heredoc\n");
+			//printf("heredoc\n");
 			write(STDIN_FILENO, "\n", 1);
 			msh.exit_status = 130;
-			//close(STDIN_FILENO);
+			close(STDIN_FILENO);
 		}
-		else
-		{
-			rl_replace_line("", 0);
-			rl_on_new_line();
-			write(STDIN_FILENO, "\n", 1);
-			rl_redisplay();
-			msh.sigint = 1;
-			msh.exit_status = 130;
-		}
-		//dup2(msh.stdfd[0], STDIN_FILENO);
 	}
 }
 
@@ -33,13 +35,15 @@ void		handle_sigint(int signum)
 	//write(STDERR_FILENO, "\n", 1);
 	//if (msh.g_pid == -1)
 		//prompt();
+	if (signum == SIGINT)
+	{
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	write(STDIN_FILENO, "\n", 1);
 	rl_redisplay();
-	msh.sigint = 1;
 	msh.exit_status = 130;
 	(void)signum;
+	}
 }
 
 void		handle_sigquit(int signum)
@@ -63,8 +67,14 @@ void		handle_sigquit(int signum)
 void		listen_signals(void)
 {
 	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, handle_sigquit);
-	//signal(SIGQUIT, SIG_IGN);
+	//signal(SIGQUIT, handle_sigquit);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+void		listen_signals_child(void)
+{
+	signal(SIGINT, handle_child_signal);
+	signal(SIGQUIT, handle_child_signal);
 }
 
 void		listen_signals_heredoc(void)

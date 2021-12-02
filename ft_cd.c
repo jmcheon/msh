@@ -40,6 +40,11 @@ static void	check_error_cd(t_minishell *msh, char **args, int err)
 		modify_pwd_variable(msh, "PWD");
 		msh->exit_status = 0;
 	}
+	else if (err == -2)
+	{
+		print_err_msg("msh: cd: ", NULL, "too many arguments\n");
+		msh->exit_status = 1;
+	}
 	else
 	{
 		print_err_msg("msh: cd: ", args[1], ": ");
@@ -60,8 +65,14 @@ void	ft_cd(t_minishell *msh, char **args, int err)
 	modify_pwd_variable(msh, "OLDPWD");
 	if (args[1] == NULL)
 		err = chdir(home_path);
+	else if (ft_strlen_2dim((const char **)args) > 2)
+		err = -2;
 	else if (args[1][0] == '-' && args[1][1] == '\0')
+	{
+		write(STDERR_FILENO, old_path, ft_strlen(old_path));
+		write(STDERR_FILENO, "\n", 1);
 		err = chdir(old_path);
+	}
 	else if (args[1][0] == '~' && (args[1][1] == '\0' || args[1][1] == '/'))
 	{
 		temp = ft_strjoin(home_path, args[1] + 1);

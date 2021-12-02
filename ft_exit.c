@@ -80,7 +80,10 @@ int	ft_exit(t_minishell *msh, char **args)
 
 	ft_putendl_fd("exit", STDERR_FILENO);
 	if (!args[1])
+	{
+		free_msh(msh, 0);
 		exit(0);
+	}
 	if (!is_number(args[1]))
 	{
 		n = 2;
@@ -93,5 +96,6 @@ int	ft_exit(t_minishell *msh, char **args)
 	}
 	else
 		n = (unsigned char)ft_atoi_exit(args[1]);
+	free_msh(msh, 0);
 	exit(n);
 }

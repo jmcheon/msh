@@ -12,42 +12,36 @@
 
 #include "minishell.h"
 
-static void	realloc_pipe_args_heredoc_paths(t_cmd *cmd, char ***pipe_args)
+static int	check_pipe_args(t_minishell *msh, t_cmd *cmd, char ***args)
 {
-	*pipe_args = ft_strjoin_2dim_memdel(*pipe_args,
-			malloc_args(cmd->temp_path));
-	cmd->heredoc_paths = ft_strjoin_2dim_memdel(cmd->heredoc_paths,
-			malloc_args(cmd->temp_path));
-}
-
-static int	parse_each_heredoc(t_minishell *msh, t_cmd *cmd, char ***pipe_args)
-{
-	char	**temp_args;
+	char	*temp;
 	size_t	size;
 	size_t	j;
 
-	size = ft_strlen_2dim((const char **)*pipe_args);
+	size = ft_strlen_2dim((const char **)*args);
 	j = -1;
+	temp = NULL;
 	while (++j < size)
 	{
-		if (!ft_strcmp((*pipe_args)[j], "<<"))
+		if ((!ft_strcmp((*args)[j], ">>") || !ft_strcmp((*args)[j], ">"))
+			&& (ft_strchr((*args)[j + 1], '$')
+				&& ft_strcmp((*args)[j + 1], "$")))
+			temp = replace_variables(msh, (*args)[j + 1]);
 		{
-			if (execute_heredoc(msh, cmd, *pipe_args + j) == 1)
+			if (temp != NULL && !ft_strcmp(temp, ""))
+			{
+				print_err_msg("msh: ",
+					(*args)[j + 1], ": ambiguous redirect\n");
+				ft_memdel(&temp);
 				return (1);
-			*pipe_args = ft_substr_2dim(pipe_args, j, 2);
-			if (check_command(pipe_args)
-				&& !check_redirection_input((*pipe_args) + j))
-				realloc_pipe_args_heredoc_paths(cmd, pipe_args);
-			else
-				unlink(cmd->temp_path);
-			size -= 2;
-			j--;
+			}
 		}
 	}
+	ft_memdel(&temp);
 	return (0);
 }
 
-static char	**parse_heredocs(t_minishell *msh, t_cmd *cmd, char **args)
+char	**check_redirection_variable(t_minishell *msh, t_cmd *cmd, char **args)
 {
 	char	**temp_args;
 	char	**new_args;
@@ -59,7 +53,7 @@ static char	**parse_heredocs(t_minishell *msh, t_cmd *cmd, char **args)
 	while (++i < cmd->pipe_count + 1)
 	{
 		pipe_args = parse_pipe_part(args, i);
-		if (parse_each_heredoc(msh, cmd, &pipe_args) == 1)
+		if (check_pipe_args(msh, cmd, &pipe_args) == 1)
 		{
 			ft_memdel_2dim(&args);
 			ft_memdel_2dim(&pipe_args);
@@ -74,22 +68,4 @@ static char	**parse_heredocs(t_minishell *msh, t_cmd *cmd, char **args)
 	}
 	ft_memdel_2dim(&args);
 	return (new_args);
-}
-
-char	**check_valid_redirection(t_minishell *msh, t_cmd *cmd, char **args)
-{
-	char	**new_args;
-	size_t	size;
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	size = ft_strlen_2dim((const char **)args);
-	if (check_syntax_error(msh, args, size) == 1)
-	{
-		ft_memdel_2dim(&args);
-		return ((char **) NULL);
-	}
-	args = parse_heredocs(msh, cmd, args);
-	return (args);
 }

@@ -69,6 +69,7 @@ size_t	check_pipe_count(char **args, size_t size);
 
 /* parse variables */
 void	check_variables(t_minishell *msh, char ***args);
+char	*replace_variables(t_minishell *msh, char *line);
 char	*replace_variables_one_line(t_minishell *msh, char *line);
 char	*search_one_variable(t_minishell *msh, char *variable);
 
@@ -122,6 +123,7 @@ void	redirect_pipeout(int pipefd[2]);
 
 /* to parse redirection part */
 char	**ft_substr_2dim(char ***args, size_t start, size_t len);
+char	**check_redirection_variable(t_minishell *msh, t_cmd *cmd, char **args);
 
 /* funtions */
 void	print_2dim_string(char **s, size_t size);
@@ -142,14 +144,15 @@ char	**ft_strtrim_2dim_by_index(const char **args, size_t start, size_t end);
 int	search_one_variable_path(t_minishell *msh, char *variable);
 char	*get_one_variable_path(t_minishell *msh, char *variable);
 void	ft_unset(t_minishell *msh, char **args);
+
 //void	ft_env(t_minishell *msh);
 //void	ft_env(char **envp);
 int	ft_env(t_minishell *msh);
 int	ft_pwd(t_minishell *msh);
 void	ft_cd(t_minishell *msh, char **args, int err);
 int	ft_echo(t_minishell *msh, char **cmd);
-void	ft_export(t_minishell *msh, char **cmd);
-void	ft_export3(char **cmd, char **envp);
+void	ft_export(t_minishell *msh, char **args);
+void	ft_setenv(t_minishell *msh, char *path, char *var, char *value);
 int	ft_exit(t_minishell *msh, char **args);
 int	ft_exit_pipe(t_minishell *msh, char **args);
 void	ft_unset(t_minishell *msh, char **args);

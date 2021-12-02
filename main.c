@@ -62,6 +62,9 @@ char	**check_valid_readline(t_minishell *msh, char *line)
 		return ((char **) NULL);
 */
 	msh->cmd[0].pipe_count = check_pipe_count(args, -1);
+	args = check_redirection_variable(msh, &msh->cmd[0], args);
+	if (args == NULL)
+		return ((char **) NULL);
 	args = check_valid_redirection(msh, &msh->cmd[0], args);
 	check_variables(msh, &args);
 	return (args);
@@ -141,94 +144,36 @@ int	ft_readline(t_minishell *msh)
 
 	while (1)
 	{
-		//printf("test\n");
+		listen_signals();
 		line = readline("minishell$ ");
-		if (msh->sigint == 1)
-			msh->sigint = 0;
 		if (line)
 		{
 			check_readline(msh, &line);
-/*
-			dup2(msh->stdfd[0], STDIN_FILENO);
-			dup2(msh->stdfd[1], STDOUT_FILENO);
-			//dup2(msh->stdfd[0], STDIN_FILENO);	
-			close(msh->stdfd[0]);
-			close(msh->stdfd[1]);
-*/
-			//listen_signals();
-			//printf("af readline\n");
 			if (msh->ret != NULL)
 			{
 				ft_memdel(&line);
-				//printf("msh ret is not null\n");
 				return (1);
 			}
-			//msh->exit_status = 0;
 		}
 		else
 		{
 			ft_memdel(&line);
-			//printf("break\n");
 			break ;
 		}
-		add_history(line);
+		if (check_readline_argc(line) > 0)
+			add_history(line);
 		ft_memdel(&line);
 	}
 	ft_memdel(&line);
 	return (0);
 }
 
-int	ft_readline_new(t_minishell *msh)
-{
-	pid_t	pid;
-	char	*line;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		while (1)
-		{
-			line = readline("minishell$ ");
-			if (msh->sigint == 1)
-			{
-				//free(line);
-				msh->sigint = 0;
-				//break ;
-				//msh->line = line;
-			}
-			if (line)
-			{
-				check_readline(msh, &line);
-				if (msh->ret != NULL)
-				{
-					ft_memdel(&line);
-					return (1);
-				}
-			}
-			else
-			{
-				ft_memdel(&line);
-				break ;
-			}
-			add_history(line);
-			ft_memdel(&line);
-		}
-		ft_memdel(&line);
-		return (0);
-	}
-	wait(NULL);
-	return (0);
-}
-
-//int	minishell(char *str)
 int	main(int argc, char **argv, char **envp)
 {
 	//t_minishell	msh;
 
 	init_msh(&msh, envp);
-	listen_signals();
 	ft_readline(&msh);
-	//signal(SIGINT, signal_handler);
 	if (msh.ret != NULL)
 	{
 		printf("%s\n", msh.ret);

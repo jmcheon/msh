@@ -22,10 +22,8 @@ int	run_one_process(t_minishell *msh, t_cmd *cmd)
 int	run_one_command(t_minishell *msh, t_cmd *cmd)
 {
 	pid_t	pid;
-	size_t	size;
 	int	wstatus;
 
-	size = ft_strlen_2dim((const char **)cmd->args);
 	msh->g_pid = fork();
 	if (msh->g_pid == -1)
 	{
@@ -47,9 +45,10 @@ int	run_one_command(t_minishell *msh, t_cmd *cmd)
 		return (0);
 	}
 	wait(&wstatus);
+	if (WIFSIGNALED(wstatus))
+		return (WIFSIGNALED(wstatus));
+		//printf("sig err one cmd=%d, %d\n", WIFSIGNALED(wstatus), WEXITSTATUS(wstatus));
 	if (WEXITSTATUS(wstatus))
-	{
 		return (WEXITSTATUS(wstatus));
-	}
 	return (0);
 }

@@ -23,7 +23,10 @@ static int	i_ft_execve(t_minishell *msh, char **args, size_t *i)
 	if (ft_strcmp(args[0], "export") == 0)
 		return (1);
 	if (ft_strcmp(args[0], "cd") == 0)
+	{
+		ft_cd(msh, args, 0);
 		return (1);
+	}
 	if (ft_strcmp(args[0], "exit") == 0)
 	{
 		msh->exit_status = ft_exit_pipe(msh, args);
@@ -44,16 +47,14 @@ int	ft_execve(t_minishell *msh, char **args)
 	char	*new_path;
 	char	*current_path;
 	size_t	i;
-	size_t	size;
 
 	if (i_ft_execve(msh, args, &i) == 1)
 		return (1);
 	if (msh->envp[i] != NULL)
 	{
 		paths = ft_split(msh->envp[i] + 5, ':');
-		size = ft_strlen_2dim((const char **)paths);
 		i = -1;
-		while (++i < size)
+		while (++i < ft_strlen_2dim((const char **)paths))
 		{
 			current_path = ft_strjoin(paths[i], "/");
 			new_path = ft_strjoin(current_path, args[0]);

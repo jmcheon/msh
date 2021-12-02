@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/02 01:46:46 by cjung-mo          #+#    #+#             */
+/*   Updated: 2021/12/02 01:46:47 by cjung-mo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	init_flags(t_flags *flags)
@@ -38,13 +50,14 @@ void	free_cmd(t_cmd *cmd, int mode)
 	size_t	i;
 
 	i = 0;
-	//if (cmd->line != NULL)
+	if (cmd->line != NULL)
 		ft_memdel(&cmd->line);
-	//if (cmd->args != NULL)
+	if (cmd->args != NULL)
 		ft_memdel_2dim(&(cmd->args));
 	if (cmd->heredoc_paths != NULL)
 	{
-		while (mode == 0 && i < ft_strlen_2dim((const char **)cmd->heredoc_paths))
+		while (mode == 0
+			&& i < ft_strlen_2dim((const char **)cmd->heredoc_paths))
 			unlink(cmd->heredoc_paths[i++]);
 		ft_memdel_2dim(&(cmd->heredoc_paths));
 		//fprintf(stderr, "free cmd heredoc path freed\n");
@@ -57,8 +70,6 @@ void	free_cmd(t_cmd *cmd, int mode)
 		ft_memdel(&(cmd->temp_path));
 	}
 	//free(cmd);
-	//init_cmd(cmd);
-	//init_flags(&cmd->flags);
 }
 
 void	free_msh(t_minishell *msh, int mode)

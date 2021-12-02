@@ -12,34 +12,6 @@
 
 #include "minishell.h"
 
-int	search_one_variable_path(t_minishell *msh, char *variable)
-{
-	char	**args;
-	size_t	i;
-
-	i = 0;
-	args = NULL;
-	while (msh->envp[i] != NULL
-		&& ft_strncmp(msh->envp[i], variable, ft_strlen(variable)) != 0)
-		i++;
-	if (msh->envp[i] == NULL)
-		return (-1);
-	if (!ft_strncmp(msh->envp[i], variable, ft_strlen(variable)))
-	{
-		if (msh->envp[i][ft_strlen(variable) + 1] == '=')
-		{
-			args = ft_split(msh->envp[i], '=');
-			if (ft_strcmp(args[0], variable) != 0)
-			{
-				ft_memdel_2dim(&args);
-				return (-1);
-			}
-		}
-	}
-	ft_memdel_2dim(&args);
-	return (i);
-}
-
 static int	is_valid_var(char *str)
 {
 	if ((*str >= '0' && *str <= '9'))

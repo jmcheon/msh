@@ -1,6 +1,7 @@
 #include "minishell.h"
 
-static int	run_child_pipe_commands(t_minishell *msh, t_cmd *cmd, int i, int pipefd[cmd->pipe_count][2])
+//static int	run_child_pipe_commands(t_minishell *msh, t_cmd *cmd, int i, int pipefd[cmd->pipe_count][2])
+static int	run_child_pipe_commands(t_minishell *msh, t_cmd *cmd, int i, int (*pipefd)[2])
 {
 	char	**pipe_args;
 	size_t	j;
@@ -51,11 +52,11 @@ static int	open_pipeline(t_cmd *cmd, int pipefd[cmd->pipe_count][2])
 		}
 		i++;
 	}
-	fprintf(stderr, "pipe opend, pipe_count is %d\n", cmd->pipe_count);
 	return (0);
 }
 
-static int	wait_pipeline_child(t_minishell *msh, t_cmd *cmd, pid_t pipe_pids[cmd->pipe_count + 1], int pipe_count)
+//static int	wait_pipeline_child(t_minishell *msh, t_cmd *cmd, pid_t pipe_pids[cmd->pipe_count + 1], int pipe_count)
+static int	wait_pipeline_child(t_minishell *msh, t_cmd *cmd, pid_t *pipe_pids, int pipe_count)
 {
 	size_t	i;
 	int	wstatus;
@@ -64,18 +65,17 @@ static int	wait_pipeline_child(t_minishell *msh, t_cmd *cmd, pid_t pipe_pids[cmd
 	while (i < pipe_count + 1)
 	{
 		waitpid(pipe_pids[i], &wstatus, 0);
+		if (i == pipe_count && WIFSIGNALED(wstatus))
+			return (WIFSIGNALED(wstatus));
 		if (i == pipe_count && WEXITSTATUS(wstatus))
-		{
-			fprintf(stderr, "run pipe command wstatus=%d\n", WEXITSTATUS(wstatus));
 			return (WEXITSTATUS(wstatus));
-		}
 		i++;
 	}
 	return (0);
 }
 
 static int	run_pipeline(t_minishell *msh, t_cmd *cmd,
-			pid_t pipe_pids[cmd->pipe_count + 1], int pipefd[cmd->pipe_count][2])
+			pid_t pipe_pids[cmd->pipe_count + 1], int (*pipefd)[2])
 {
 	size_t	i;
 
@@ -97,7 +97,8 @@ static int	run_pipeline(t_minishell *msh, t_cmd *cmd,
 					printf("pipe cmd:%s\n", msh->ret);
 					ft_memdel(&msh->ret);
 				}
-				fprintf(stderr, "exit status in run pipe command=%d\n", msh->exit_status);
+				free(pipefd);
+				free(pipe_pids);
 				free_msh(msh, 1);
 				exit (msh->exit_status);
 			}
@@ -107,51 +108,69 @@ static int	run_pipeline(t_minishell *msh, t_cmd *cmd,
 	return (0);
 }
 
-int	run_pipe_commands(t_minishell *msh, t_cmd *cmd, int pipe_count)
+static int	open_pipeline_new(t_cmd *cmd, int (*pipefd)[2])
 {
-	pid_t	pipe_pids[pipe_count + 1];
 	size_t	i;
 	size_t	j;
-	int	wstatus;
-	int	pipefd[pipe_count][2];
 
-	if (open_pipeline(cmd, pipefd) == 1)
-		return (1);
-	if (run_pipeline(msh, cmd, pipe_pids, pipefd) == 1)
-		return (1);
-	j = 0;
-	while (j < pipe_count)
-	{
-		close(pipefd[j][0]);
-		close(pipefd[j][1]);
-		j++;
-	}
-/*
-	while (j < pipe_count)
-	{
-		if (j != pipe_count)
-			close(pipefd[j][0]);
-		if (j != 0)
-			close(pipefd[j][1]);
-		j++;
-	}
-	close(pipefd[0][1]);
-	close(pipefd[pipe_count - 1][0]);
-*/
-	return (wait_pipeline_child(msh, cmd, pipe_pids, pipe_count));
-/*
 	i = 0;
-	while (i < pipe_count + 1)
+	while (i < cmd->pipe_count)
 	{
-		waitpid(pipe_pids[i], &wstatus, 0);
-		if (i == pipe_count && WEXITSTATUS(wstatus))
+		if (pipe((pipefd)[i]) == -1)
 		{
-			fprintf(stderr, "run pipe command wstatus=%d\n", WEXITSTATUS(wstatus));
-			return (WEXITSTATUS(wstatus));
+			perror("pipe()");
+			j = 0;
+			while (j < i)
+			{
+				close((pipefd[j])[0]);
+				close((pipefd[j])[1]);
+				j++;
+			}
+			return (1);
 		}
 		i++;
 	}
-	fprintf(stderr, "chile processes done\n");
 	return (0);
-*/
+}
+
+int	run_pipe_commands(t_minishell *msh, t_cmd *cmd, int pipe_count)
+{
+	pid_t	*pipe_pids;
+	size_t	i;
+	int	ret;
+	int	(*pipefd)[2];
+
+	i = 0;
+	ret = 0;
+	pipefd = (int (*)[2])malloc(sizeof(int) * 2 * pipe_count);
+	if (!pipefd)
+		return (1);
+	pipe_pids = (pid_t *)malloc(sizeof(pid_t) * (pipe_count + 1 + 1));
+	if (!pipe_pids)
+	{
+		free(pipefd);
+		return (1);
+	}
+	if (open_pipeline_new(cmd, (pipefd)) == 1)
+	{
+		free(pipefd);
+		free(pipe_pids);
+		return (1);
+	}
+	if (run_pipeline(msh, cmd, pipe_pids, pipefd) == 1)
+	{
+		free(pipefd);
+		free(pipe_pids);
+		return (1);
+	}
+	while (i < pipe_count)
+	{
+		close(pipefd[i][0]);
+		close(pipefd[i][1]);
+		i++;
+	}
+	ret = wait_pipeline_child(msh, cmd, pipe_pids, pipe_count);
+	free(pipefd);
+	free(pipe_pids);
+	return (ret);
 }

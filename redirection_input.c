@@ -135,6 +135,14 @@ static int	get_next_heredoc(t_minishell *msh, t_cmd *cmd, char **args, int infil
 			ft_memdel(&line);
 		}
 		msh->running_heredoc = 0;
+		//fprintf(stderr, "end of heredoc\n");
+		dup2(msh->stdfd[0], STDIN_FILENO);
+		dup2(msh->stdfd[1], STDOUT_FILENO);
+		//dup2(msh->stdfd[0], STDIN_FILENO);	
+		close(msh->stdfd[0]);
+		close(msh->stdfd[1]);
+		msh->stdfd[0] = dup(STDIN_FILENO);
+		msh->stdfd[1] = dup(STDOUT_FILENO);
 /*
 		argc = check_readline_argc(line);
 		fprintf(stderr, "heredoc fini=%s$, argc=%d\n", line, argc);

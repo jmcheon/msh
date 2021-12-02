@@ -85,7 +85,7 @@ static char	*delete_one_dollor_before_quotes(t_minishell *msh, char *line)
 	return (new_line);
 }
 
-static char	*replace_variables(t_minishell *msh, char *line)
+char	*replace_variables(t_minishell *msh, char *line)
 {
 	char	**args;
 	char	*new_line;

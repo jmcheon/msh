@@ -12,6 +12,34 @@
 
 #include "minishell.h"
 
+int	search_one_variable_path(t_minishell *msh, char *variable)
+{
+	char	**args;
+	size_t	i;
+
+	i = 0;
+	args = NULL;
+	while (msh->envp[i] != NULL
+		&& ft_strncmp(msh->envp[i], variable, ft_strlen(variable)) != 0)
+		i++;
+	if (msh->envp[i] == NULL)
+		return (-1);
+	if (!ft_strncmp(msh->envp[i], variable, ft_strlen(variable)))
+	{
+		if (msh->envp[i][ft_strlen(variable) + 1] == '=')
+		{
+			args = ft_split(msh->envp[i], '=');
+			if (ft_strcmp(args[0], variable) != 0)
+			{
+				ft_memdel_2dim(&args);
+				return (-1);
+			}
+		}
+	}
+	ft_memdel_2dim(&args);
+	return (i);
+}
+
 char	*search_one_variable(t_minishell *msh, char *variable)
 {
 	char	**args;
@@ -19,18 +47,26 @@ char	*search_one_variable(t_minishell *msh, char *variable)
 	size_t	i;
 
 	i = 0;
+	value = NULL;
 	while (msh->envp[i] != NULL
 		&& ft_strncmp(msh->envp[i], variable, ft_strlen(variable)) != 0)
 		i++;
 	if (msh->envp[i] == NULL)
 		return (NULL);
-	args = ft_split(msh->envp[i], '=');
-	if (ft_strcmp(args[0], variable) != 0)
+	if (!ft_strncmp(msh->envp[i], variable, ft_strlen(variable)))
 	{
-		ft_memdel_2dim(&args);
-		return (NULL);
+		if (msh->envp[i][ft_strlen(variable) + 1] == '=')
+		{
+			args = ft_split(msh->envp[i], '=');
+			if (ft_strcmp(args[0], variable) != 0)
+			{
+				ft_memdel_2dim(&args);
+				return (NULL);
+			}
+		}
 	}
-	value = ft_strdup(ft_strchr(msh->envp[i], '=') + 1);
+	if (msh->envp[i][ft_strlen(variable) + 1] == '=')
+		value = ft_strdup(ft_strchr(msh->envp[i], '=') + 1);
 	ft_memdel_2dim(&args);
 	return (value);
 }
