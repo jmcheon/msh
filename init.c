@@ -84,7 +84,7 @@ void	free_msh(t_minishell *msh, int mode)
 	}
 	if (msh->ret != NULL)
 		ft_memdel(&(msh->ret));
-	fprintf(stderr, "free envp\n");
+	//fprintf(stderr, "free envp\n");
 	ft_memdel_2dim(&msh->envp);
 	close(msh->stdfd[0]);
 	close(msh->stdfd[1]);

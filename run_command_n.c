@@ -62,6 +62,7 @@ static int	run_pipeline(t_minishell *msh,
 			perror("fork()");
 			return (1);
 		}
+		listen_signals_child();
 		if (pipe_pids[i] == 0)
 		{
 			if (run_child_pipe_commands(msh, &msh->cmd[0], i, pipefd) == 1)
