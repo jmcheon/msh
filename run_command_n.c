@@ -36,7 +36,14 @@ static int	wait_pipeline_child(t_minishell *msh,
 	{
 		waitpid(pipe_pids[i], &wstatus, 0);
 		if (i == pipe_count && WIFSIGNALED(wstatus))
-			return (WIFSIGNALED(wstatus));
+		{
+			if (WTERMSIG(wstatus) == 2)
+				return (130);
+			else if (WTERMSIG(wstatus) == 3)
+				return (131);
+			else
+				return (WIFSIGNALED(wstatus));
+		}
 		if (i == pipe_count && WEXITSTATUS(wstatus))
 			return (WEXITSTATUS(wstatus));
 		i++;

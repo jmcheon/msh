@@ -42,12 +42,12 @@ void		handle_sigint(int signum)
 		//prompt();
 	if (signum == SIGINT)
 	{
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	write(STDIN_FILENO, "\n", 1);
-	rl_redisplay();
-	msh.exit_status = 130;
-	(void)signum;
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		write(STDIN_FILENO, "\n", 1);
+		rl_redisplay();
+		msh.exit_status = 130;
+		(void)signum;
 	}
 }
 
@@ -56,8 +56,8 @@ void		handle_sigquit(int signum)
 	//printf("handle sigquit\n");
 	if (msh.g_pid > 0)
 	{
-		kill(msh.g_pid, SIGABRT);
-		write(STDERR_FILENO, "Quit: 3\n", 8);
+	//	kill(msh.g_pid, SIGABRT);
+	//	write(STDERR_FILENO, "Quit: 3\n", 8);
 	}
 /*
 	if (msh.running_heredoc == 1)
