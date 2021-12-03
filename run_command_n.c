@@ -1,35 +1,5 @@
 #include "minishell.h"
 
-//static int	run_child_pipe_commands(t_minishell *msh, t_cmd *cmd, int i, int pipefd[cmd->pipe_count][2])
-static int	run_child_pipe_commands(t_minishell *msh, t_cmd *cmd, int i, int (*pipefd)[2])
-{
-	char	**pipe_args;
-	size_t	j;
-
-	j = -1;
-	while (++j < cmd->pipe_count)
-	{
-		if (j != i)
-			close(pipefd[j][1]);
-		if (j != i - 1)
-			close(pipefd[j][0]);
-	}
-	pipe_args = parse_pipe_part(cmd->args, i);
-	if (i == 0)
-		return (run_pipein_process(msh, cmd, &pipe_args, pipefd[i]));
-	else if (i == cmd->pipe_count)
-	{
-		redirect_pipeout(pipefd[i - 1]);
-		return (run_pipeout_process(msh, cmd, &pipe_args));
-	}
-	else
-	{
-		redirect_pipe(pipefd[i - 1], pipefd[i]);
-		return (run_pipe_process(msh, cmd, &pipe_args));
-	}
-	return (0);
-}
-
 static int	open_pipeline(t_cmd *cmd, int pipefd[cmd->pipe_count][2])
 {
 	size_t	i;
@@ -55,11 +25,11 @@ static int	open_pipeline(t_cmd *cmd, int pipefd[cmd->pipe_count][2])
 	return (0);
 }
 
-//static int	wait_pipeline_child(t_minishell *msh, t_cmd *cmd, pid_t pipe_pids[cmd->pipe_count + 1], int pipe_count)
-static int	wait_pipeline_child(t_minishell *msh, t_cmd *cmd, pid_t *pipe_pids, int pipe_count)
+static int	wait_pipeline_child(t_minishell *msh,
+			t_cmd *cmd, pid_t *pipe_pids, int pipe_count)
 {
 	size_t	i;
-	int	wstatus;
+	int		wstatus;
 
 	i = 0;
 	while (i < pipe_count + 1)
@@ -74,13 +44,10 @@ static int	wait_pipeline_child(t_minishell *msh, t_cmd *cmd, pid_t *pipe_pids, i
 	return (0);
 }
 
-static int	run_pipeline(t_minishell *msh, t_cmd *cmd,
-			pid_t pipe_pids[cmd->pipe_count + 1], int (*pipefd)[2])
+static int	run_pipeline(t_minishell *msh,
+			pid_t *pipe_pids, int (*pipefd)[2], size_t i)
 {
-	size_t	i;
-
-	i = -1;
-	while (++i < cmd->pipe_count + 1)
+	while (++i < msh->cmd[0].pipe_count + 1)
 	{
 		pipe_pids[i] = fork();
 		if (pipe_pids[i] == -1)
@@ -90,13 +57,10 @@ static int	run_pipeline(t_minishell *msh, t_cmd *cmd,
 		}
 		if (pipe_pids[i] == 0)
 		{
-			if (run_child_pipe_commands(msh, cmd, i, pipefd) == 1)
+			if (run_child_pipe_commands(msh, &msh->cmd[0], i, pipefd) == 1)
 			{
 				if (msh->ret != NULL)
-				{
 					printf("pipe cmd:%s\n", msh->ret);
-					ft_memdel(&msh->ret);
-				}
 				free(pipefd);
 				free(pipe_pids);
 				free_msh(msh, 1);
@@ -137,8 +101,8 @@ int	run_pipe_commands(t_minishell *msh, t_cmd *cmd, int pipe_count)
 {
 	pid_t	*pipe_pids;
 	size_t	i;
-	int	ret;
-	int	(*pipefd)[2];
+	int		ret;
+	int		(*pipefd)[2];
 
 	i = 0;
 	ret = 0;
@@ -157,7 +121,7 @@ int	run_pipe_commands(t_minishell *msh, t_cmd *cmd, int pipe_count)
 		free(pipe_pids);
 		return (1);
 	}
-	if (run_pipeline(msh, cmd, pipe_pids, pipefd) == 1)
+	if (run_pipeline(msh, pipe_pids, pipefd, -1) == 1)
 	{
 		free(pipefd);
 		free(pipe_pids);

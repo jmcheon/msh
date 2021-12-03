@@ -77,6 +77,7 @@ char	*search_one_variable(t_minishell *msh, char *variable);
 size_t	check_single_quote(char *line, size_t i);
 size_t	check_double_quote(char *line, size_t i);
 void	check_quote_characters(t_flags *flags, char *line, size_t i);
+int	check_readline_quotes(t_minishell *msh, char **temp, char *line);
 char	*omit_quotes(char *str);
 
 /* to parse strings */
@@ -96,6 +97,7 @@ void	parse_redirection_part(t_minishell *msh, t_cmd *cmd, char ***pipe_args);
 /* to run commands */
 int	run_one_command(t_minishell *msh, t_cmd *cmd);
 int	run_pipe_commands(t_minishell *msh, t_cmd *cmd, int pipe_count);
+int	run_child_pipe_commands(t_minishell *msh, t_cmd *cmd, int i, int (*pipefd)[2]);
 
 /* to run each process */
 int	run_one_process(t_minishell *msh, t_cmd *cmd);
@@ -151,7 +153,7 @@ int	ft_env(t_minishell *msh);
 int	ft_pwd(t_minishell *msh);
 void	ft_cd(t_minishell *msh, char **args, int err);
 int	ft_echo(t_minishell *msh, char **cmd);
-void	ft_export(t_minishell *msh, char **args);
+int	ft_export(t_minishell *msh, char **args);
 void	ft_setenv(t_minishell *msh, char *path, char *var, char *value);
 int	ft_exit(t_minishell *msh, char **args);
 int	ft_exit_pipe(t_minishell *msh, char **args);
@@ -159,5 +161,7 @@ void	ft_unset(t_minishell *msh, char **args);
 
 void	listen_signals_heredoc(void);
 void	listen_signals(void);
+void	listen_signals_child(void);
+
 
 #endif

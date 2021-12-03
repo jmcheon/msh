@@ -26,7 +26,7 @@ int	search_one_variable_path(t_minishell *msh, char *variable)
 		return (-1);
 	if (!ft_strncmp(msh->envp[i], variable, ft_strlen(variable)))
 	{
-		if (msh->envp[i][ft_strlen(variable) + 1] == '=')
+		if (msh->envp[i][ft_strlen(variable)] == '=')
 		{
 			args = ft_split(msh->envp[i], '=');
 			if (ft_strcmp(args[0], variable) != 0)
@@ -48,6 +48,7 @@ char	*search_one_variable(t_minishell *msh, char *variable)
 
 	i = 0;
 	value = NULL;
+	args = NULL;
 	while (msh->envp[i] != NULL
 		&& ft_strncmp(msh->envp[i], variable, ft_strlen(variable)) != 0)
 		i++;
@@ -55,7 +56,7 @@ char	*search_one_variable(t_minishell *msh, char *variable)
 		return (NULL);
 	if (!ft_strncmp(msh->envp[i], variable, ft_strlen(variable)))
 	{
-		if (msh->envp[i][ft_strlen(variable) + 1] == '=')
+		if (msh->envp[i][ft_strlen(variable)] == '=')
 		{
 			args = ft_split(msh->envp[i], '=');
 			if (ft_strcmp(args[0], variable) != 0)
@@ -65,7 +66,7 @@ char	*search_one_variable(t_minishell *msh, char *variable)
 			}
 		}
 	}
-	if (msh->envp[i][ft_strlen(variable) + 1] == '=')
+	if (msh->envp[i][ft_strlen(variable)] == '=')
 		value = ft_strdup(ft_strchr(msh->envp[i], '=') + 1);
 	ft_memdel_2dim(&args);
 	return (value);

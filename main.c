@@ -141,11 +141,13 @@ int	check_readline(t_minishell *msh, char **line)
 int	ft_readline(t_minishell *msh)
 {
 	char	*line;
+	char	*temp;
 
 	while (1)
 	{
 		listen_signals();
 		line = readline("minishell$ ");
+		temp = NULL;
 		if (line)
 		{
 			check_readline(msh, &line);
@@ -160,9 +162,11 @@ int	ft_readline(t_minishell *msh)
 			ft_memdel(&line);
 			break ;
 		}
-		if (check_readline_argc(line) > 0)
+		if (check_readline_quotes(msh, &temp, line) == 0)
+		//if (check_readline_argc(line) > 0)
 			add_history(line);
 		ft_memdel(&line);
+		ft_memdel(&temp);
 	}
 	ft_memdel(&line);
 	return (0);

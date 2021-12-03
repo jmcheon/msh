@@ -56,6 +56,7 @@ static char	*get_variable(char *line, size_t *i)
 	size_t	j;
 
 	temp = NULL;
+	//fprintf(stderr, "get var line=%s$\n", line);
 	if (ft_strchr(line + *i, '\"') || ft_strchr(line + *i, '$'))
 	{
 		j = *i;

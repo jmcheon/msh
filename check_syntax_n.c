@@ -95,26 +95,35 @@ int	check_syntax_error(t_minishell *msh, char **args, size_t size)
 	return (0);
 }
 
-int	check_readline_syntax_error(t_minishell *msh, char *line)
+int	check_readline_quotes(t_minishell *msh, char **temp, char *line)
 {
 	t_flags	flags;
+
+	init_flags(&flags);
+	check_quote_characters(&flags, line, 0);
+	if (flags.q_single == 1)
+		*temp = ft_strjoin(line, "\'");
+	else if (flags.q_double == 1)
+		*temp = ft_strjoin(line, "\"");
+	else
+		*temp = ft_strdup(line);
+	if (check_readline_argc(*temp) <= 0)
+	{
+		ft_memdel(temp);
+		return (1);
+	}
+	return (0);
+}
+
+int	check_readline_syntax_error(t_minishell *msh, char *line)
+{
 	char	*temp;
 	char	**args;
 
 	args = NULL;
-	init_flags(&flags);
-	check_quote_characters(&flags, line, 0);
-	if (flags.q_single == 1)
-		temp = ft_strjoin(line, "\'");
-	else if (flags.q_double == 1)
-		temp = ft_strjoin(line, "\"");
-	else
-		temp = ft_strdup(line);
-	if (check_readline_argc(temp) <= 0)
-	{
-		ft_memdel(&temp);
+	temp = NULL;
+	if (check_readline_quotes(msh, &temp, line) == 1)
 		return (1);
-	}
 	args = split_readline_by_argc(msh, args, temp);
 	ft_memdel(&temp);
 	if (check_syntax_error(msh, args, ft_strlen_2dim((const char **)args)) == 1)

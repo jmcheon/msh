@@ -49,7 +49,6 @@ int	run_one_command(t_minishell *msh, t_cmd *cmd)
 		perror("fork()");
 		return (1);
 	}
-	//listen_signals_child();
 	if (msh->g_pid == 0)
 	{
 		if (run_one_process(msh, cmd) == 1)

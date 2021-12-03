@@ -82,21 +82,25 @@ static	void	i_ft_export(t_minishell *msh, char **args)
 			mode = (args[i][len] == '+' && args[i][len + 1] == '=');
 			ft_setenv(msh, args[i], variable, args[i] + len + 1 + mode);
 		}
+		else
+			msh->envp = ft_strjoin_2dim_memdel(msh->envp, malloc_args(variable));
 	}
 	ft_memdel(&variable);
 }
 
-void	ft_export(t_minishell *msh, char **args)
+int	ft_export(t_minishell *msh, char **args)
 {
 	int		i;
 
 	i = 0;
+	//fprintf(stderr, "args[1]=%s\n", args[1]);
 	if (!args[1])
 	{
 		while (msh->envp[i])
 			printf("declare -x %s\n", msh->envp[i++]);
-		return ;
+		return (1);
 	}
 	i_ft_export(msh, args);
 	msh->exit_status = 0;
+	return (1);
 }

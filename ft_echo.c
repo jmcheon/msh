@@ -31,7 +31,13 @@ int	ft_echo(t_minishell *msh, char **cmd)
 		n++;
 	}
 	while (cmd[i])
-		printf("%s", cmd[i++]);
+	{
+		ft_putstr_fd(cmd[i], 1);
+		if (cmd[++i])
+			write(1, " ", 1);
+	}
+	//while (cmd[i])
+	//	printf("%s", cmd[i++]);
 	if (n == 0)
 		printf("\n");
 	msh->exit_status = 0;

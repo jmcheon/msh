@@ -2,16 +2,24 @@
 
 void	handle_child_signal(int signum)
 {
+	//fprintf(stderr, "habdle chile sig");
 	if (signum == SIGINT)
 	{
 		ft_putstr_fd("\n", STDERR_FILENO);
-		msh.exit_status = 130;
+		//msh.exit_status = 130;
 	}
 	if (signum == SIGQUIT)
 	{
 		ft_putstr_fd("Quit (core dumped)\n", STDERR_FILENO);
-		msh.exit_status = 131;
+		//msh.exit_status = 131;
 	}
+}
+
+void		listen_signals_child(void)
+{
+	//fprintf(stderr, "linsten chile sig");
+	signal(SIGINT, handle_child_signal);
+	signal(SIGQUIT, handle_child_signal);
 }
 
 void	handle_heredoc(int signum)
@@ -19,12 +27,9 @@ void	handle_heredoc(int signum)
 	//printf("heredoc handle\n");
 	if (signum == SIGINT)
 	{
-		{
-			//printf("heredoc\n");
-			write(STDIN_FILENO, "\n", 1);
-			msh.exit_status = 130;
-			close(STDIN_FILENO);
-		}
+		write(STDIN_FILENO, "\n", 1);
+		msh.exit_status = 130;
+		close(STDIN_FILENO);
 	}
 }
 
@@ -69,12 +74,6 @@ void		listen_signals(void)
 	signal(SIGINT, handle_sigint);
 	//signal(SIGQUIT, handle_sigquit);
 	signal(SIGQUIT, SIG_IGN);
-}
-
-void		listen_signals_child(void)
-{
-	signal(SIGINT, handle_child_signal);
-	signal(SIGQUIT, handle_child_signal);
 }
 
 void		listen_signals_heredoc(void)

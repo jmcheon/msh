@@ -21,7 +21,7 @@ static int	i_ft_execve(t_minishell *msh, char **args, size_t *i)
 	if (ft_strcmp(args[0], "unset") == 0)
 		return (1);
 	if (ft_strcmp(args[0], "export") == 0)
-		return (1);
+		return (ft_export(msh, args));
 	if (ft_strcmp(args[0], "cd") == 0)
 	{
 		ft_cd(msh, args, 0);

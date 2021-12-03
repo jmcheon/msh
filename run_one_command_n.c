@@ -30,6 +30,7 @@ int	run_one_command(t_minishell *msh, t_cmd *cmd)
 		perror("fork()");
 		return (1);
 	}
+	listen_signals_child();
 	if (msh->g_pid == 0)
 	{
 		if (run_one_process(msh, cmd) == 1)
@@ -46,7 +47,14 @@ int	run_one_command(t_minishell *msh, t_cmd *cmd)
 	}
 	wait(&wstatus);
 	if (WIFSIGNALED(wstatus))
-		return (WIFSIGNALED(wstatus));
+	{
+		if (WTERMSIG(wstatus) == 2)
+			return (130);
+		else if (WTERMSIG(wstatus) == 3)
+			return (131);
+		else
+			return (WIFSIGNALED(wstatus));
+	}
 		//printf("sig err one cmd=%d, %d\n", WIFSIGNALED(wstatus), WEXITSTATUS(wstatus));
 	if (WEXITSTATUS(wstatus))
 		return (WEXITSTATUS(wstatus));

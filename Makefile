@@ -44,6 +44,7 @@ SRCS = main.c \
 	./parse_redirection_part_n.c \
 	./run_process_n.c \
 	./run_command_n.c \
+	./run_child_pipe_commands.c \
 	./run_one_command_n.c \
 	./redirection_input.c \
 	./redirection_output.c \
@@ -57,7 +58,6 @@ SRCS = main.c \
 	./replace_variables_one_line.c \
 	./search_one_variable.c \
 	./ft_execve.c \
-	./ft_setenv.c \
 	./ft_cd.c \
 	./ft_unset.c \
 	./ft_exit.c \
@@ -65,6 +65,7 @@ SRCS = main.c \
 	./ft_pwd.c \
 	./ft_env.c \
 	./ft_export.c \
+	./ft_setenv.c \
 	./signal.c \
 	#./check_readline_argc.c \
 	./check_valid_pipeline.c \
