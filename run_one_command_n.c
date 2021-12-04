@@ -6,7 +6,7 @@
 /*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/03 16:33:10 by cjung-mo          #+#    #+#             */
-/*   Updated: 2021/12/03 16:33:10 by cjung-mo         ###   ########.fr       */
+/*   Updated: 2021/12/04 14:56:05 by cjung-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	run_one_command(t_minishell *msh, t_cmd *cmd)
 		{
 			if (msh->ret != NULL)
 			{
-				printf("one cmd:%s\n", msh->ret);
+				printf("msh: %s\n", msh->ret);
 				ft_memdel(&msh->ret);
 			}
 			free_msh(msh, 1);

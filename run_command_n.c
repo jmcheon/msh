@@ -6,7 +6,7 @@
 /*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/03 16:32:59 by cjung-mo          #+#    #+#             */
-/*   Updated: 2021/12/03 16:32:59 by cjung-mo         ###   ########.fr       */
+/*   Updated: 2021/12/04 14:56:21 by cjung-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int	run_pipeline(t_minishell *msh,
 			if (run_child_pipe_commands(msh, &msh->cmd[0], i, pipefd) == 1)
 			{
 				if (msh->ret != NULL)
-					printf("pipe cmd:%s\n", msh->ret);
+					printf("msh :%s\n", msh->ret);
 				free(pipefd);
 				free(pipe_pids);
 				free_msh(msh, 1);
