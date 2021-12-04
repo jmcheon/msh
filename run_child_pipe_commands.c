@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   run_child_pipe_commands.c                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/03 16:32:49 by cjung-mo          #+#    #+#             */
+/*   Updated: 2021/12/03 16:32:49 by cjung-mo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	run_child_pipe_commands(t_minishell *msh,
 			t_cmd *cmd, int i, int (*pipefd)[2])
 {
 	char	**pipe_args;
-	size_t	j;
+	int		j;
 
 	j = -1;
 	while (++j < cmd->pipe_count)

@@ -12,11 +12,11 @@
 
 #include "minishell.h"
 
-static int	check_pipe_args(t_minishell *msh, t_cmd *cmd, char ***args)
+static int	check_pipe_args(t_minishell *msh, char ***args)
 {
 	char	*temp;
-	size_t	size;
-	size_t	j;
+	int		size;
+	int		j;
 
 	size = ft_strlen_2dim((const char **)*args);
 	j = -1;
@@ -46,14 +46,14 @@ char	**check_redirection_variable(t_minishell *msh, t_cmd *cmd, char **args)
 	char	**temp_args;
 	char	**new_args;
 	char	**pipe_args;
-	size_t	i;
+	int		i;
 
 	i = -1;
 	new_args = NULL;
 	while (++i < cmd->pipe_count + 1)
 	{
 		pipe_args = parse_pipe_part(args, i);
-		if (check_pipe_args(msh, cmd, &pipe_args) == 1)
+		if (check_pipe_args(msh, &pipe_args) == 1)
 		{
 			ft_memdel_2dim(&args);
 			ft_memdel_2dim(&pipe_args);

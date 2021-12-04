@@ -53,9 +53,9 @@ static long long	ft_atoi_exit(char *str)
 
 int	ft_exit_pipe(t_minishell *msh, char **args)
 {
-	char			*temp;
 	unsigned char	n;
 
+	(void)msh;
 	if (!args[1])
 		return (0);
 	if (!is_number(args[1]))
@@ -75,7 +75,6 @@ int	ft_exit_pipe(t_minishell *msh, char **args)
 
 int	ft_exit(t_minishell *msh, char **args)
 {
-	char			*temp;
 	unsigned char	n;
 
 	ft_putendl_fd("exit", STDERR_FILENO);

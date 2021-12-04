@@ -56,7 +56,6 @@ static char	*get_variable(char *line, size_t *i)
 	size_t	j;
 
 	temp = NULL;
-	//fprintf(stderr, "get var line=%s$\n", line);
 	if (ft_strchr(line + *i, '\"') || ft_strchr(line + *i, '$'))
 	{
 		j = *i;
@@ -111,7 +110,7 @@ char	*replace_variables_one_line(t_minishell *msh, char *line)
 		i += get_next_variable_index(&new_line, (line + i));
 		if (i >= ft_strlen(line))
 			break ;
-		if (check_loop(&new_line, line, &i, msh->exit_status) == 1)
+		if (check_loop(&new_line, line, &i, g_exit_status) == 1)
 			continue ;
 		else
 			temp = get_variable(line, &i);

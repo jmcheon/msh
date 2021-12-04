@@ -15,7 +15,6 @@
 static size_t	get_string_count(char *str, char *s)
 {
 	size_t	i;
-	size_t	j;
 	size_t	count;
 
 	i = 0;

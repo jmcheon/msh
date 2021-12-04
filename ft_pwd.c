@@ -12,11 +12,12 @@
 
 #include "minishell.h"
 
-int	ft_pwd(t_minishell *msh)
+int	ft_pwd(void)
 {
 	char	path[1024];
 
-	printf("%s\n", getcwd(path, 1024));
-	msh->exit_status = 0;
+	getcwd(path, 1024);
+	printf("%s\n", path);
+	g_exit_status = 0;
 	return (1);
 }

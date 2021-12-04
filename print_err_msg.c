@@ -1,48 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_echo.c                                          :+:      :+:    :+:   */
+/*   print_err_msg.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/30 17:25:45 by cjung-mo          #+#    #+#             */
-/*   Updated: 2021/11/30 17:25:45 by cjung-mo         ###   ########.fr       */
+/*   Created: 2021/12/04 03:11:01 by cjung-mo          #+#    #+#             */
+/*   Updated: 2021/12/04 03:11:01 by cjung-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	i_ft_echo(char **cmd, int i)
+void	print_err_msg(char *msg, char *str, char *msg2)
 {
-	while (cmd[i])
-	{
-		ft_putstr_fd(cmd[i], 1);
-		if (cmd[++i])
-			write(1, " ", 1);
-	}
-}
+	char	*temp;
+	char	*temp2;
 
-int	ft_echo(char **cmd)
-{
-	int	i;
-	int	j;
-	int	n;
-
-	i = 1;
-	n = 0;
-	while (cmd[i] && cmd[i][0] == '-' && cmd[i][1] == 'n')
-	{
-		j = 2;
-		while (cmd[i][j] == 'n')
-			j++;
-		if (cmd[i][j])
-			break ;
-		i++;
-		n++;
-	}
-	i_ft_echo(cmd, i);
-	if (n == 0)
-		printf("\n");
-	g_exit_status = 0;
-	return (1);
+	if (str != NULL)
+		temp = ft_strjoin(msg, str);
+	else
+		temp = ft_strdup(msg);
+	temp2 = ft_strjoin(temp, msg2);
+	write(STDERR_FILENO, temp2, ft_strlen(temp2));
+	ft_memdel(&temp);
+	ft_memdel(&temp2);
 }

@@ -19,25 +19,22 @@ static int	i_ft_execve(t_minishell *msh, char **args, size_t *i)
 		&& ft_strncmp(msh->envp[*i], "PATH", 4) != 0)
 		(*i)++;
 	if (ft_strcmp(args[0], "unset") == 0)
-		return (1);
+		return (ft_unset(msh, args));
 	if (ft_strcmp(args[0], "export") == 0)
 		return (ft_export(msh, args));
 	if (ft_strcmp(args[0], "cd") == 0)
-	{
-		ft_cd(msh, args, 0);
-		return (1);
-	}
+		return (ft_cd(msh, args, 0));
 	if (ft_strcmp(args[0], "exit") == 0)
 	{
-		msh->exit_status = ft_exit_pipe(msh, args);
+		g_exit_status = ft_exit_pipe(msh, args);
 		return (1);
 	}
 	else if (ft_strcmp(args[0], "env") == 0)
 		return (ft_env(msh));
 	else if (ft_strcmp(args[0], "echo") == 0)
-		return (ft_echo(msh, args));
+		return (ft_echo(args));
 	else if (ft_strcmp(args[0], "pwd") == 0)
-		return (ft_pwd(msh));
+		return (ft_pwd());
 	return (0);
 }
 
@@ -65,6 +62,6 @@ int	ft_execve(t_minishell *msh, char **args)
 		ft_memdel_2dim(&paths);
 	}
 	msh->ret = ft_strjoin(args[0], ": command not found");
-	msh->exit_status = 127;
+	g_exit_status = 127;
 	return (0);
 }

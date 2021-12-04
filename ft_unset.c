@@ -27,31 +27,42 @@ static int	is_valid_var(char *str)
 	return (1);
 }
 
-void	ft_unset(t_minishell *msh, char **args)
+static void	i_ft_unset(t_minishell *msh, char **args, size_t i)
 {
 	char	**tmp_args;
-	int		i;
 	int		n;
 
 	tmp_args = NULL;
-	i = -1;
-	n = -1;
-	while (++i < ft_strlen_2dim((const char **)args))
+	n = search_one_variable_path(msh, (args)[i]);
+	if (n >= 0)
+	{
+		tmp_args = msh->envp;
+		msh->envp = ft_strtrim_2dim_by_index(
+				(const char **)msh->envp, n, n);
+		ft_memdel_2dim(&tmp_args);
+	}
+}
+
+int	ft_unset(t_minishell *msh, char **args)
+{
+	size_t	i;
+	int		err;
+
+	i = 0;
+	err = 0;
+	while (i < ft_strlen_2dim((const char **)args))
 	{
 		if (!is_valid_var((args)[i]))
 		{
 			print_err_msg("unset: ", args[i++], ": not a valid identifier\n");
-			msh->exit_status = 1;
+			err = 1;
 			continue ;
 		}
-		n = search_one_variable_path(msh, (args)[i]);
-		if (n >= 0)
-		{
-			tmp_args = msh->envp;
-			msh->envp = ft_strtrim_2dim_by_index(
-					(const char **)msh->envp, n, n);
-			ft_memdel_2dim(&tmp_args);
-		}
-		msh->exit_status = 0;
+		i_ft_unset(msh, args, i++);
 	}
+	if (err == 1)
+		g_exit_status = 1;
+	else
+		g_exit_status = 0;
+	return (1);
 }

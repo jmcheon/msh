@@ -12,11 +12,11 @@
 
 #include "minishell.h"
 
-static void	split_quotes(char ***args, char *line, char *temp_line, size_t *i)
+static void	split_quotes(char ***args, char *line, char *temp_line, int *i)
 {
 	char	*temp;
 	char	*temp2;
-	size_t	j;
+	int		j;
 
 	temp = NULL;
 	temp2 = NULL;
@@ -37,7 +37,7 @@ static void	split_quotes(char ***args, char *line, char *temp_line, size_t *i)
 	ft_memdel(&temp2);
 }
 
-static void	split_line_symbol(char ***args, char *new_line, char *temp)
+static void	split_line_symbol(char ***args, char *temp)
 {
 	char	**temp_args;
 
@@ -50,10 +50,10 @@ static void	split_line_symbol(char ***args, char *new_line, char *temp)
 	*args = ft_strjoin_2dim_memdel(*args, temp_args);
 }
 
-static size_t	split_line(char ***args, char *new_line, size_t i)
+static size_t	split_line(char ***args, char *new_line, int i)
 {
 	char	*temp;
-	size_t	j;
+	int		j;
 
 	j = i;
 	temp = NULL;
@@ -72,34 +72,34 @@ static size_t	split_line(char ***args, char *new_line, size_t i)
 	if (new_line[i] == Q_SINGLE || new_line[i] == Q_DOUBLE)
 		split_quotes(args, new_line, temp, &i);
 	else
-		split_line_symbol(args, new_line, temp);
+		split_line_symbol(args, temp);
 	ft_memdel(&temp);
 	return (i);
 }
 
-char	**split_readline_by_argc(t_minishell *msh, char **args, char *line)
+char	**split_readline_by_argc(char **args, char *line)
 {
 	char	*new_line;
-	size_t	i;
-	size_t	size;
+	int		i;
+	int		size;
 
 	i = -1;
 	if (check_readline_argc(line) > 0)
 	{
 		new_line = rmalloc_line(line, get_new_line_size(line));
 		size = ft_strlen(new_line);
-	}
-	while (++i < size)
-	{
-		while (new_line[i] == ' ')
-			i++;
-		if (i == 0 && (new_line[i] == Q_SINGLE || new_line[i] == Q_DOUBLE))
-			split_quotes(&args, new_line, NULL, &i);
-		else if (i != 0 && (new_line[i - 1] != '\\'
-				&& (new_line[i] == Q_SINGLE || new_line[i] == Q_DOUBLE)))
-			split_quotes(&args, new_line, NULL, &i);
-		else if (new_line[i] >= 33 && new_line[i] <= 126)
-			i = split_line(&args, new_line, i);
+		while (++i < size)
+		{
+			while (new_line[i] == ' ')
+				i++;
+			if (i == 0 && (new_line[i] == Q_SINGLE || new_line[i] == Q_DOUBLE))
+				split_quotes(&args, new_line, NULL, &i);
+			else if (i != 0 && (new_line[i - 1] != '\\'
+					&& (new_line[i] == Q_SINGLE || new_line[i] == Q_DOUBLE)))
+				split_quotes(&args, new_line, NULL, &i);
+			else if (new_line[i] >= 33 && new_line[i] <= 126)
+				i = split_line(&args, new_line, i);
+		}
 	}
 	ft_memdel(&new_line);
 	return (args);

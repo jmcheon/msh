@@ -22,9 +22,8 @@ static void	realloc_pipe_args_heredoc_paths(t_cmd *cmd, char ***pipe_args)
 
 static int	parse_each_heredoc(t_minishell *msh, t_cmd *cmd, char ***pipe_args)
 {
-	char	**temp_args;
-	size_t	size;
-	size_t	j;
+	int	size;
+	int	j;
 
 	size = ft_strlen_2dim((const char **)*pipe_args);
 	j = -1;
@@ -52,7 +51,7 @@ static char	**parse_heredocs(t_minishell *msh, t_cmd *cmd, char **args)
 	char	**temp_args;
 	char	**new_args;
 	char	**pipe_args;
-	size_t	i;
+	int		i;
 
 	i = -1;
 	new_args = NULL;
@@ -78,10 +77,8 @@ static char	**parse_heredocs(t_minishell *msh, t_cmd *cmd, char **args)
 
 char	**check_valid_redirection(t_minishell *msh, t_cmd *cmd, char **args)
 {
-	char	**new_args;
 	size_t	size;
 	size_t	i;
-	size_t	j;
 
 	i = 0;
 	size = ft_strlen_2dim((const char **)args);

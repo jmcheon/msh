@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   run_one_command_n.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/03 16:33:10 by cjung-mo          #+#    #+#             */
+/*   Updated: 2021/12/03 16:33:10 by cjung-mo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	run_one_process(t_minishell *msh, t_cmd *cmd)
@@ -19,32 +31,10 @@ int	run_one_process(t_minishell *msh, t_cmd *cmd)
 	exit(0);
 }
 
-int	run_one_command(t_minishell *msh, t_cmd *cmd)
+static int	wait_child(void)
 {
-	pid_t	pid;
-	int	wstatus;
+	int		wstatus;
 
-	msh->g_pid = fork();
-	if (msh->g_pid == -1)
-	{
-		perror("fork()");
-		return (1);
-	}
-	listen_signals_child();
-	if (msh->g_pid == 0)
-	{
-		if (run_one_process(msh, cmd) == 1)
-		{
-			if (msh->ret != NULL)
-			{
-				printf("one cmd:%s\n", msh->ret);
-				ft_memdel(&msh->ret);
-			}
-			free_msh(msh, 1);
-			exit (msh->exit_status);
-		}
-		return (0);
-	}
 	wait(&wstatus);
 	if (WIFSIGNALED(wstatus))
 	{
@@ -55,8 +45,35 @@ int	run_one_command(t_minishell *msh, t_cmd *cmd)
 		else
 			return (WIFSIGNALED(wstatus));
 	}
-		//printf("sig err one cmd=%d, %d\n", WIFSIGNALED(wstatus), WEXITSTATUS(wstatus));
 	if (WEXITSTATUS(wstatus))
 		return (WEXITSTATUS(wstatus));
 	return (0);
+}
+
+int	run_one_command(t_minishell *msh, t_cmd *cmd)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork()");
+		return (1);
+	}
+	listen_signals_child();
+	if (pid == 0)
+	{
+		if (run_one_process(msh, cmd) == 1)
+		{
+			if (msh->ret != NULL)
+			{
+				printf("one cmd:%s\n", msh->ret);
+				ft_memdel(&msh->ret);
+			}
+			free_msh(msh, 1);
+			exit (g_exit_status);
+		}
+		return (0);
+	}
+	return (wait_child());
 }

@@ -14,7 +14,7 @@
 
 static size_t	get_pipe_count(char **args, int process_num, size_t *i)
 {
-	size_t	pipe_count;
+	int	pipe_count;
 
 	pipe_count = 0;
 	if (process_num != 0)

@@ -61,31 +61,31 @@ static int	ft_check_syntax(char *str)
 
 static	void	i_ft_export(t_minishell *msh, char **args)
 {
-	char	*variable;
+	char	*var;
 	int		len;
 	int		mode;
 	int		i;
 
 	i = 0;
-	variable = NULL;
+	var = NULL;
 	while (args[++i])
 	{
-		variable = ft_getvar(args[i]);
-		if (ft_checkvar(variable) == 0 || ft_check_syntax(args[i]) == 0)
+		var = ft_getvar(args[i]);
+		if (ft_checkvar(var) == 0 || ft_check_syntax(args[i]) == 0)
 		{
 			printf("export: `%s': not a valid identifier\n", args[i]);
-			msh->exit_status = 1;
+			g_exit_status = 1;
 		}
-		else if (ft_strcmp(variable, args[i]))
+		else if (ft_strncmp(var, args[i], ft_strlen(args[i])))
 		{
-			len = ft_strlen(variable);
+			len = ft_strlen(var);
 			mode = (args[i][len] == '+' && args[i][len + 1] == '=');
-			ft_setenv(msh, args[i], variable, args[i] + len + 1 + mode);
+			ft_setenv(msh, args[i], var, args[i] + len + 1 + mode);
 		}
-		else
-			msh->envp = ft_strjoin_2dim_memdel(msh->envp, malloc_args(variable));
+		else if (search_one_variable_path(msh, var) < 0)
+			msh->envp = ft_strjoin_2dim_memdel(msh->envp, malloc_args(var));
+		ft_memdel(&var);
 	}
-	ft_memdel(&variable);
 }
 
 int	ft_export(t_minishell *msh, char **args)
@@ -93,7 +93,6 @@ int	ft_export(t_minishell *msh, char **args)
 	int		i;
 
 	i = 0;
-	//fprintf(stderr, "args[1]=%s\n", args[1]);
 	if (!args[1])
 	{
 		while (msh->envp[i])
@@ -101,6 +100,6 @@ int	ft_export(t_minishell *msh, char **args)
 		return (1);
 	}
 	i_ft_export(msh, args);
-	msh->exit_status = 0;
+	g_exit_status = 0;
 	return (1);
 }

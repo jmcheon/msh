@@ -2,7 +2,7 @@ NAME = minishell
 
 INCLUDE = ./minishell.h
 
-SRCS = main.c \
+SRCS =	minishell.c \
 	./ft_strjoin.c \
 	./ft_strjoin_memdel.c \
 	./ft_strjoin_2dim.c \
@@ -36,25 +36,24 @@ SRCS = main.c \
 	./check_valid_redirection_n.c \
 	./check_redirection_variable.c \
 	./check_token.c \
-	./get_next_line.c \
+	./check_readline_argc_n.c \
+	./check_variable_n.c \
 	./init.c \
 	./omit_quotes_n.c \
-	./execute.c \
+	./execute_n.c \
 	./parse_pipe_n.c \
 	./parse_redirection_part_n.c \
 	./run_process_n.c \
 	./run_command_n.c \
 	./run_child_pipe_commands.c \
 	./run_one_command_n.c \
-	./redirection_input.c \
+	./redirection_input_n.c \
 	./redirection_output.c \
-	./check_readline_argc_n.c \
 	./split_character_n.c \
 	./split_string_n.c \
 	./split_readline_n.c \
 	./rmalloc_line.c \
 	./get_next_line_size.c \
-	./check_variable_n.c \
 	./replace_variables_one_line.c \
 	./search_one_variable.c \
 	./ft_execve.c \
@@ -67,9 +66,9 @@ SRCS = main.c \
 	./ft_export.c \
 	./ft_setenv.c \
 	./signal.c \
-	#./check_readline_argc.c \
-	./check_valid_pipeline.c \
-	./check_redirection.c \
+	./handle_signals.c \
+	./print_err_msg.c \
+	./util.c \
 
 OBJS = $(SRCS:.c=.o)
 
@@ -77,7 +76,7 @@ CC = clang
 
 SAM = -fsanitize=address -g
 
-#CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror
 
 RM = /bin/rm -rf
 
@@ -95,6 +94,6 @@ fclean : clean
 re : fclean all
 
 norm : 
-	norminette $(SRCS) #$(INCLUDE)
+	norminette $(SRCS) $(INCLUDE)
 
 .PHONY : all clean fclean re norm

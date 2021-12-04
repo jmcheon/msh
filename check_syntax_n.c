@@ -95,10 +95,11 @@ int	check_syntax_error(t_minishell *msh, char **args, size_t size)
 	return (0);
 }
 
-int	check_readline_quotes(t_minishell *msh, char **temp, char *line)
+int	check_readline_quotes(char **temp, char *line)
 {
 	t_flags	flags;
 
+	*temp = NULL;
 	init_flags(&flags);
 	check_quote_characters(&flags, line, 0);
 	if (flags.q_single == 1)
@@ -122,9 +123,9 @@ int	check_readline_syntax_error(t_minishell *msh, char *line)
 
 	args = NULL;
 	temp = NULL;
-	if (check_readline_quotes(msh, &temp, line) == 1)
+	if (check_readline_quotes(&temp, line) == 1)
 		return (1);
-	args = split_readline_by_argc(msh, args, temp);
+	args = split_readline_by_argc(args, temp);
 	ft_memdel(&temp);
 	if (check_syntax_error(msh, args, ft_strlen_2dim((const char **)args)) == 1)
 		return (2);

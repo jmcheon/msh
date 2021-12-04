@@ -38,7 +38,7 @@ static	size_t	get_next_split_index(char *line, int c)
 	return (i);
 }
 
-static char	**split_quotes_variable(t_minishell *msh, char *line, size_t i)
+static char	**split_quotes_variable(char *line, size_t i)
 {
 	char	**args;
 	char	*temp;
@@ -66,7 +66,7 @@ static char	**split_quotes_variable(t_minishell *msh, char *line, size_t i)
 	return (args);
 }
 
-static char	*delete_one_dollor_before_quotes(t_minishell *msh, char *line)
+static char	*delete_one_dollor_before_quotes(char *line)
 {
 	char	*new_line;
 	size_t	i;
@@ -93,8 +93,8 @@ char	*replace_variables(t_minishell *msh, char *line)
 	size_t	j;
 
 	new_line = ft_strdup("");
-	temp = delete_one_dollor_before_quotes(msh, line);
-	args = split_quotes_variable(msh, temp, -1);
+	temp = delete_one_dollor_before_quotes(line);
+	args = split_quotes_variable(temp, -1);
 	ft_memdel(&temp);
 	j = 0;
 	while (j < ft_strlen_2dim((const char **)args))
