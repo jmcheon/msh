@@ -6,7 +6,7 @@
 /*   By: cjung-mo <cjung-mo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 01:32:51 by cjung-mo          #+#    #+#             */
-/*   Updated: 2021/12/02 01:32:53 by cjung-mo         ###   ########.fr       */
+/*   Updated: 2021/12/04 15:54:28 by cjung-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ static	void	i_ft_export(t_minishell *msh, char **args)
 		var = ft_getvar(args[i]);
 		if (ft_checkvar(var) == 0 || ft_check_syntax(args[i]) == 0)
 		{
-			printf("export: `%s': not a valid identifier\n", args[i]);
+			print_err_msg("export: ", args[i], ": not a valid identifier\n");
 			g_exit_status = 1;
 		}
 		else if (ft_strncmp(var, args[i], ft_strlen(args[i])))
